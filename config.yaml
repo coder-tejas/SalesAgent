@@ -1,0 +1,6 @@
+target_industries: ["SaaS", "Data SaaS"]
+min_employees: 50
+max_employees: 600
+funding_stages: ["Series B", "Series C"]
+target_locations: ["United States"]
+target_tech: ["Stripe", "AWS", "GCP"]

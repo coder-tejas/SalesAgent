@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+database/
+token.json
+temp_markdown.md

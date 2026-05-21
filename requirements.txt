@@ -3,8 +3,6 @@ langchain-core
 langchain_community 
 langchain_google_genai
 langchain_openai
-langchain_chroma
-chromadb
 hubspot-api-client
 pyairtable
 google-api-python-client
@@ -13,4 +11,5 @@ google-auth-httplib2
 colorama
 python-dotenv
 bs4
-unstructured
+html2text
+pyyaml

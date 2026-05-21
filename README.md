@@ -1,98 +1,84 @@
-# AI-Sales-Outreach-Automation
+# B2B Lead Prospecting Pipeline
 
-### 👉 Dive into the full article: [**AI Agents + LangGraph: The Winning Formula for Sales Outreach Automation**](https://dev.to/kaymen99/how-ai-automation-can-transform-your-sales-outreach-strategy-aop)  
+An AI-powered B2B lead prospecting pipeline built with **LangGraph** that automates company enrichment, contact discovery, and lead qualification against a configurable Ideal Customer Profile (ICP).
 
-![outreach-automation](https://github.com/user-attachments/assets/2685ef70-ab9f-4177-9b2a-71086f79726b)
-
-I built an **AI-powered outreach system** designed to integrate with multiple **CRMs**, automate lead research, and enhance the lead generation process. The system analyzes **LinkedIn data**, company websites, recent news, and social media activities to gather comprehensive insights on potential leads. Based on this information, it generates detailed **analysis reports** that highlight lead challenges, gaps, and opportunities for engagement.
-
-The system also creates customized **outreach materials**, including **personalized emails**, **interview preparation scripts**, and **tailored outreach reports** that showcase how our solutions can address the lead's pain points, supported by previous results and case studies.
-
-For this project, I created a sample AI marketing agency, **ElevateAI Marketing Solutions**, which focuses on optimizing and automating content strategies and enhancing digital presence using AI.
-
-While designed for **ElevateAI**, this system can easily be adapted for any agency or freelancer looking to streamline their lead outreach and improve engagement with prospects. With its customizable features, it offers a powerful, automated approach to lead generation.
+The system fetches leads from your CRM, enriches each company with firmographic data and recent business signals, discovers decision makers, scores the lead on a 0–100 scale with an A/B/C grade, and syncs the results back to your CRM — all automatically.
 
 ## Features
 
 ### **Multi-CRM Integration**
-- Seamlessly connect with popular CRMs like **HubSpot**, **Airtable**, **Google Sheets**, or add your own custom CRM functionality using a standardized schema.
+- Connect to **HubSpot**, **Airtable**, **Google Sheets**, or add your own CRM by extending the base class.
 
-### **Automated Lead Research**
-- **LinkedIn Profile Scraping**: Automatically collect essential details about the lead and their company from LinkedIn to create a comprehensive profile.  
-- **Company Digital Presence Analysis**: Evaluate the company's website and blog content for insights into their products and services. Additionally, assess their social media activity across platforms like **Facebook**, **Twitter**, **YouTube**, and others.  
-- **Recent Company News Analysis**: Keep track of the latest news and announcements related to the company to gain insights into their current initiatives and challenges.  
-- **Pain Point Identification**: Identify potential challenges or gaps faced by the company, and provide tailored recommendations on how your agency's offerings and services can address them.  
-- **Report Generation**: Generate detailed reports for each analysis, which are saved both locally and in **Google Docs**. A consolidated global research report is created, combining insights from the lead profile, company profile, and digital presence. (You can find examples of the reports in the `/reports` folder.)  
+### **Automated Company Enrichment**
+- **Website Scraping**: Extract industry, employee count, tech stack, and location from the company website.
+- **Recent Signals**: Fetch and analyze recent news for funding rounds, hiring surges, product launches, and partnerships.
+- **No Paid APIs**: All enrichment is inferred from publicly available web data via search and scraping.
 
-### **Lead Qualification**
-Automatically assess and qualify leads based on the gathered data and your predefined criteria, here are some examples of criteria that I used:
-- **Digital Presence (Website & Blog)**: Evaluate the quality and relevance of the company’s online presence.
-- **Social Media Activity**: Analyze the company’s engagement and activity across various social media platforms.
-- **Industry Fit**: Assess how well the company aligns with your target industries and their current or potential use of **AI** and **automation** in marketing.
-- **Company Scale and Potential**: Evaluate the company’s size, growth potential, and market expansion indicators such as new hires or funding.
+### **Contact Discovery**
+- Automatically find decision makers (C-suite, VPs, Directors) using web and LinkedIn search.
+- Extract name, title, and email when available.
 
-*Note: These criteria can be modified according to specific requirements.*
+### **Lead Qualification & Scoring**
+- **LLM-based scoring**: Evaluates each lead against your ICP across 5 dimensions (industry fit, size fit, funding fit, signal strength, tech fit) on a 0–100 scale.
+- **Rule-based fallback**: If the LLM call fails, a deterministic scorer produces the same output structure.
+- **Grade assignment**: A (≥70), B (≥45), C (<45) with disqualification reasons and recommended outreach angles.
 
-### **Personalized Outreach**
-- **Customized Outreach Report**: Generate a customized outreach report for each lead, highlighting their challenges or gaps, how your services can address them, and referencing previously obtained results and similar case studies (uses RAG to extract them). The report is saved to **Google Docs** for easy sharing.
-- **Create Personalized Email**: Craft personalized email templates, including a link to the custom outreach report, to engage qualified leads effectively.
-- **Prepare Personalized Interview Script**: Generate a tailored interview script, complete with **SPIN** questions, to help prepare for calls with leads and ensure productive conversations.
-
-### **Efficient Workflow**
-- **Seamless Collaboration**: all generated research and outreach reports are saved both locally and in **Google Docs**, ensuring easy access and collaboration across teams.
-- **Automated CRM Updates**: Keep your CRM up to date with the latest lead status and links to generated reports, streamlining your outreach efforts.
+### **CRM Sync**
+- All scoring results, grades, qualification status, pain points, and outreach angles are written back to your CRM automatically.
 
 ## System Workflow
 
-The system follows the process to manage lead research and outreach efficiently (check the detailed workflow description [here](https://github.com/kaymen99/sales-outreach-automation-langgraph/tree/main/docs/system-workflow.md) and a visual diagram [here](https://github.com/kaymen99/sales-outreach-automation-langgraph/blob/main/workflow.png)):
+```
+get_new_leads → check_remaining_leads → enrich_company → discover_contacts → qualify_lead → sync_to_crm → (loop back)
+```
 
-1. **Fetch Leads**: Connect to your CRM to fetch new leads.
-2. **Research & Insights**:
-   - Gather and analyze key information for each lead:
-     - Scrape **LinkedIn profiles**.
-     - Analyze **company digital presence** (website, blogs, social media, recent news).
-   - Generate detailed analysis reports for each lead combining insights from all previous research. (You can find examples of the reports in the `/reports` folder.)  
-3. **Lead Qualification**: Evaluate each lead based on specific criteria such as **digital presence**, **social media activity**, **industry fit**, or **company scale**.
-4. **Outreach Preparation**: For qualified leads, generate personalized outreach materials:
-     - A **customized outreach report** detailing identified challenges faced by the company and how our services can address them, the system will use RAG to fetch similar case studies (from our internal knowledge base) to be referenced in the report.
-     - A **personalized email** tailored to the lead with a link to the outreach report.
-     - A **customized interview script** to prepare for calls with leads.
-5. **Update CRM**: All generated research and outreach materials are saved locally and to **Google Docs**, and the CRM is updated with the latest lead status and links to the reports.
+1. **Fetch Leads**: Pull new leads from your CRM.
+2. **Enrich Company**: Scrape the company website and recent news to populate firmographic data and business signals.
+3. **Discover Contacts**: Search for decision makers at the company.
+4. **Qualify Lead**: Score against your ICP using an LLM (with rule-based fallback). Produces score, grade, qualified status, pain points, and outreach angle.
+5. **Sync to CRM**: Write all results back to the CRM record.
+6. **Loop**: Process the next lead until none remain.
 
+## Configuration
 
-### Advantages of This automation
+### ICP Config (`config.yaml`)
 
-- **Automated Lead Research & Qualification**: The system streamlines lead research by gathering insights from LinkedIn, company websites, social media, and more. It ensures every lead is thoroughly evaluated based on criteria tailored to your agency’s needs.
+Define your Ideal Customer Profile at the project root:
 
-- **Increased Outreach Reply Rates & Conversions**: Instead of sending a simple standalone email, the system generates a detailed audit report for each lead, attached to the email. These reports demonstrate that you’ve thoroughly researched their business, identified key challenges, and can provide tailored solutions, supported by relevant case studies. This approach increases the likelihood of positive responses, boosting your outreach reply rates and conversions.
+```yaml
+target_industries: ["SaaS", "Data SaaS"]
+min_employees: 50
+max_employees: 600
+funding_stages: ["Series B", "Series C"]
+target_locations: ["United States"]
+target_tech: ["Stripe", "AWS", "GCP"]
+```
 
-- **Time-Saving & Optimized Team Efficiency**: By automating lead research and generating reports with valuable insights, challenges, and recommendations, the system saves time and enhances teamwork. It provides a prepared interview script to help your team engage clients effectively during calls, and the comprehensive reports enable them to quickly craft and present tailored solutions to potential clients.
-
+The qualification prompt and rule-based scorer both use these values.
 
 ## Integration with APIs
 
-- **Airtable CRM**: To integrate with your Airtable contacts CRM, you must [sign up](https://www.airtable.com/) for an Airtable account and create your own contacts database with the relevant fields.
-- **HubSpot CRM**: To integrate with your HubSpot contacts CRM, sign up for a [HubSpot account](https://www.hubspot.com/), then create a private app and obtain your API key. [Follow this tutorial](https://www.youtube.com/watch?v=hSipSbiwc2s) for guidance.
-- **LinkedIn Data**: Scrape profile information using the **RapidAPI LinkedIn Profile Data API**. [Get your API key here](https://rapidapi.com/freshdata-freshdata-default/api/fresh-linkedin-profile-data).
-- **Google APIs**: Used to access **Google Docs**, **Google Sheets** (needed only when used as CRM source), and **Gmail**. Follow [this guide](https://developers.google.com/gmail/api/quickstart/python) and ensure all required APIs are enabled.
+- **Airtable CRM**: [Sign up](https://www.airtable.com/) and create a contacts table with relevant fields.
+- **HubSpot CRM**: [Sign up](https://www.hubspot.com/), create a private app, and get your API key.
 - **Google Searches**: Perform web searches using the **Serper API**. [Get your API key here](https://serper.dev).
-- **LLM**: Leverages **Google Gemini LLM models** (Flash and Pro) and their Embedding model. [Get your API key here](https://ai.google.dev/gemini-api/docs/api-key).
+- **LLM**: Uses **Google Gemini Flash** via `langchain_google_genai`. [Get your API key here](https://ai.google.dev/gemini-api/docs/api-key).
+- **Google APIs** (optional): Used for **Google Sheets** CRM and **Gmail**. Follow [this guide](https://developers.google.com/gmail/api/quickstart/python).
 
 ## Tech Stack
 
-- **[Langchain](https://python.langchain.com/docs/introduction/)**: Framework for interacting with multiple LLMs like GPT-4, Gemini, LLAMA3 and building AI agents and RAG applications.
-- **[Langgraph](https://langchain-ai.github.io/langgraph/)**: Framework for building AI agents and automation workflows.
+- **[LangGraph](https://langchain-ai.github.io/langgraph/)**: State machine framework for the prospecting workflow.
+- **[LangChain](https://python.langchain.com/docs/introduction/)**: LLM abstraction and tooling.
+- **Google Gemini Flash**: Primary LLM for enrichment and qualification.
+- **PyYAML**: ICP configuration loading.
 
 ## How to Run
 
 ### Prerequisites
 
 - Python 3.9+
-- Google Gemini API key (or choose other LLM providers like OpenAI or Groq).
-- Google APIs credentials.
-- API keys for integrated tools (RapidAPI, Serper API).
-- API keys and configurations for your chosen CRM (check `.env.example` for more information).
-- Necessary Python libraries (listed in `requirements.txt`).
+- Google Gemini API key
+- Serper API key
+- CRM credentials (check `.env.example`)
 
 ### Setup
 
@@ -118,44 +104,67 @@ The system follows the process to manage lead research and outreach efficiently 
 
 4. **Set up environment variables:**
 
-   Create a copy of the `.env.example` file:
-
    ```bash
    cp .env.example .env
    ```
 
-   After running this command, open the new `.env` file and add your API keys as needed.
+   Open `.env` and add your API keys.
+
+5. **Configure your ICP:**
+
+   Edit `config.yaml` with your target industries, employee range, funding stages, locations, and tech stack.
 
 ---
 
-### Start the Application
-
-Run the main script to begin automation:
+### Start the Pipeline
 
 ```sh
 python main.py
 ```
 
-The system will connect with your CRM to fetch new leads, perform automated research, qualify leads, and generate personalized outreach materials (You can see examples of reports generated, including the personalized email in the `/reports` folder).
+The system connects to your CRM, fetches new leads, enriches each company, discovers contacts, qualifies leads, and syncs results back.
 
 ---
 
-### Customizing the Automation
+### Customizing
 
-For developers who wish to integrate their own CRM or customize the behavior of the automation, please refer to the [Customization Guide](./docs/customization.md). The guide covers:
+- **Change your ICP**: Edit `config.yaml` — no code changes needed.
+- **Add a custom CRM**: Extend `LeadLoaderBase` in `src/tools/leads_loader/lead_loader_base.py`.
+- **Adjust scoring**: Modify `LEAD_QUALIFICATION_PROMPT` in `src/prompts.py` or the rule-based fallback in `src/scorer.py`.
+- **Add enrichment sources**: Extend `src/tools/enrichment.py`.
 
-- **Add your own service/product data**: The `/data` folder includes agency details and past case studies used in reports, emails, and interviews generation. You should update these files to reflect your own service/product details and your past case studies.
-- **Integrating Custom CRMs**: Instructions for adding your CRM to the system by extending the base class.
-- **Customizing Lead Statuses**: Learn how to modify the statuses used to filter and fetch leads.
-- **Updating CRM Fields**: Tailor the functions in the `OutReachAutomationNodes` class to handle different CRM field names or additional fields.
-- **Customizing Prompts**: Update the prompts used for qualifying leads, generating reports, personalizing emails, and preparing interview questions.
+## Project Structure
 
----
+```
+├── config.yaml                 # ICP configuration
+├── main.py                     # Entry point
+├── requirements.txt
+├── src/
+│   ├── graph.py                # LangGraph workflow wiring
+│   ├── nodes.py                # All pipeline node logic
+│   ├── prompts.py              # LLM prompts
+│   ├── scorer.py               # Rule-based scoring fallback
+│   ├── state.py                # Graph state schema
+│   ├── utils.py                # LLM invocation, Google auth
+│   └── tools/
+│       ├── enrichment.py       # Company data enrichment
+│       ├── contact_discovery.py # Decision maker discovery
+│       ├── base/
+│       │   ├── search_tools.py       # Google search & news
+│       │   ├── markdown_scraper_tool.py
+│       │   ├── gmail_tools.py
+│       │   └── linkedin_tools.py
+│       └── leads_loader/
+│           ├── lead_loader_base.py
+│           ├── airtable.py
+│           ├── google_sheets.py
+│           └── hubspot.py
+```
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or features you’d like to see.
+Contributions are welcome! Please open an issue or submit a pull request.
 
 ## Contact
 
-For questions or suggestions, contact me at `aymenMir1001@gmail.com`.
+For questions or suggestions, contact `aymenMir1001@gmail.com`.
